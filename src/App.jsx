@@ -9,7 +9,7 @@ const THEMES = {
   classico: {
     carcaca: {
       backgroundImage: `
-        url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'),
+        url('https:
         linear-gradient(to bottom, #2d3748, #1a202c 60%, #000 100%)
       `,
       backgroundBlendMode: "overlay",
@@ -20,12 +20,15 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border-blue-900 text-white",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)]"
+    },
+    logo: {
+      color: "text-white", 
     }
   },
   metalico: {
     carcaca: {
       backgroundImage: `
-        url('https://www.transparenttextures.com/patterns/brushed-alum.png'),
+        url('https:
         linear-gradient(160deg, #e0e5ec 0%, #bfc7ce 40%, #6b7c93 100%)
       `,
       backgroundBlendMode: "overlay",
@@ -36,9 +39,12 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-gray-200 via-gray-400 to-gray-700 border-gray-500 text-gray-900",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.7)]"
+    },
+    logo: {
+      color: "text-gray-600", 
     }
-  }
-};
+    }
+}
 
 export default function App() {
   const [tema, setTema] = useState(() => {
@@ -81,23 +87,25 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 select-none">
+      <button
+          onClick={() => setTema(tema === "classico" ? "metalico" : "classico")}
+          className="absolute top-2 right-2 px-3 py-1 rounded bg-gray-400 text-lg text-white opacity-70 hover:opacity-100 transition"
+        >
+          {tema === "classico" ? "Metálico" : "Clássico"}
+        </button>
+   
       <div
         className={`relative flex flex-col items-center w-[340px] rounded-[32px] border-[0px] ${THEMES[tema].border} shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4`}
         style={THEMES[tema].carcaca}
       >
         {/* Botão de alternância de tema */}
-        <button
-          onClick={() => setTema(tema === "classico" ? "metalico" : "classico")}
-          className="absolute top-2 right-2 px-3 py-1 rounded bg-gray-800 text-xs text-white opacity-70 hover:opacity-100 transition"
-        >
-          {tema === "classico" ? "Metálico" : "Clássico"}
-        </button>
+     
 
         {/* Speaker */}
         <div className="w-16 h-2 bg-gradient-to-b from-gray-900 to-black rounded-full mt-2 mb-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-gray-800" />
 
         {/* Logo */}
-        <div className="text-gray-300 text-lg mb-2 drop-shadow-lg font-bold tracking-widest">
+        <div className={`${THEMES[tema].logo.color} text-lg mb-2 drop-shadow-lg font-bold tracking-widest`}>
           NOKIA
         </div>
 
