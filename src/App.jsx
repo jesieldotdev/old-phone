@@ -1,10 +1,24 @@
-import React, { useState } from "react";
-import { Menu, Delete } from "lucide-react"; // Importando Lucide Icons
+import React, { useState, useRef, useEffect } from "react";
+import { Menu, Delete } from "lucide-react";
 
-const menuItems = ["Mensagens", "Contatos", "Jogos", "Configurações", ];
+const menuItems = [
+  "Mensagens", "Contatos", "Jogos", "Configurações", "Agenda",
+  "Galeria", "Rádio", "Alarme", "Calculadora", "Relógio"
+];
 
 export default function App() {
   const [selected, setSelected] = useState(0);
+  const itemRefs = useRef([]);
+
+  // Centraliza o item selecionado ao navegar
+  useEffect(() => {
+    if (itemRefs.current[selected]) {
+      itemRefs.current[selected].scrollIntoView({
+        block: "center",
+        behavior: "smooth"
+      });
+    }
+  }, [selected]);
 
   const handleKey = (dir) => {
     if (dir === "up")
@@ -30,11 +44,12 @@ export default function App() {
             <span>12:34</span>
             <span>🔋</span>
           </div>
-          <div className="flex flex-col gap-2 mt-4 pl-6">
+          <div className="flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
             {menuItems.map((item, idx) => (
               <div
                 key={item}
-                className={`text-2xl px-2 rounded tracking-wide ${
+                ref={el => itemRefs.current[idx] = el}
+                className={`text-2xl px-2 rounded tracking-wide cursor-pointer ${
                   selected === idx
                     ? "bg-blue-200 text-blue-900"
                     : "text-blue-900 opacity-70"
@@ -49,7 +64,7 @@ export default function App() {
         {/* Keypad */}
         <div className="flex flex-col items-center w-full">
           {/* Botões de menu com Lucide Icons */}
-          <div className="flex w-full justify-between items-center px-8  ">
+          <div className="flex w-full justify-between items-center px-8">
             <button
               className="w-16 h-8 flex items-center justify-center rounded-2xl bg-gradient-to-b from-gray-100 via-blue-100 to-blue-300 border border-blue-700 shadow-[0_1px_4px_rgba(0,0,0,0.18),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-200 transition"
               aria-label="Menu"
@@ -101,8 +116,8 @@ export default function App() {
             </button>
           </div>
 
-          {/* Numpad com o mesmo estilo dos direcionais */}
-          <div className="grid grid-cols-3 gap-2 mb-2 mt-2 bg-gradient-to-b from-gray-900 to-black rounded-2xl p-3 border-2 border-gray-700 shadow-[inset_0_3px_8px_rgba(0,0,0,0.6),inset_0_-2px_4px_rgba(255,255,255,0.1)]">
+          {/* Numpad centralizado e estilizado */}
+          <div className="w-fit mx-auto grid grid-cols-3 gap-2 mb-2 mt-2 bg-gradient-to-b from-gray-900 to-black rounded-2xl p-3 border-2 border-gray-700 shadow-[inset_0_3px_8px_rgba(0,0,0,0.6),inset_0_-2px_4px_rgba(255,255,255,0.1)]">
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
               (n) => (
                 <button
