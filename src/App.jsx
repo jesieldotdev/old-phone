@@ -7,7 +7,20 @@ const menuItems = [
 
 export default function App() {
   const [selected, setSelected] = useState(0);
+  const [time, setTime] = useState(() => {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  });
   const itemRefs = useRef([]);
+
+  // Atualiza o relógio a cada segundo
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Centraliza o item selecionado ao navegar
   useEffect(() => {
@@ -40,7 +53,7 @@ export default function App() {
         {/* Screen */}
         <div className="w-[280px] h-[220px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4">
           <div className="flex justify-between px-4 pt-2 text-green-700 text-2xl">
-            <span>12:34</span>
+            <span>{time}</span>
             <span>🔋</span>
           </div>
           <div className="flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
