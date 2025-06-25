@@ -299,7 +299,11 @@ export default function App() {
         {/* Screen */}
         <div
           className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4 relative"
-   
+   style={{
+            backgroundImage: `linear-gradient(to bottom, #e0f7fa, #b2ebf2)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+   }}
         >
           {renderScreen()}
         </div>
@@ -329,7 +333,7 @@ export default function App() {
             </button>
           </div>
           {/* Direcional em cruz, espaçado */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center mt-[-32px]">
             {/* Cima */}
             <button
               onClick={() => handleKey("up")}

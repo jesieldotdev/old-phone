@@ -47,7 +47,7 @@ export default function ContactDetail({ selectedContact, handleCall, handleSMS }
         <div className="flex gap-4 ">
           <button
             onClick={handleCall}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded text-xs transition ${selectedBtn === 0 ? 'bg-green-300 text-green-800' : 'bg-green-200 text-green-700 hover:bg-green-300'}`}
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded text-xs transition `}
           >
             <Phone className="h-5" />
             <span>Ligar</span>

@@ -39,7 +39,6 @@ export default function Contacts({
             tabIndex={0}
           >
             <div className="flex items-center gap-2">
-              {contact.favorite ? <Star className="h-4  fill-current" /> : <User className="h-4" />}
               <span className="truncate">{contact.name}</span>
             </div>
             <Phone className="h-3 opacity-60" />
