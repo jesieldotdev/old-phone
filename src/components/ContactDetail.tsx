@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Star, User, Phone, Mail } from "lucide-react";
+import { useKeypad } from "../contexts/KeypadContext";
 
 interface Contact {
   name: string;
@@ -13,6 +15,18 @@ interface ContactDetailProps {
 }
 
 export default function ContactDetail({ selectedContact, handleCall, handleSMS }: ContactDetailProps) {
+  const [selectedBtn, setSelectedBtn] = useState<0 | 1>(0);
+
+  useKeypad((e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      setSelectedBtn((prev) => (prev === 0 ? 1 : 0));
+    }
+    if (e.key === "Enter") {
+      if (selectedBtn === 0) handleCall();
+      if (selectedBtn === 1) handleSMS();
+    }
+  });
+
   if (!selectedContact) return null;
   return (
     <div className="flex flex-col h-full">
@@ -30,20 +44,20 @@ export default function ContactDetail({ selectedContact, handleCall, handleSMS }
             {selectedContact.number}
           </div>
         </div>
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 ">
           <button
             onClick={handleCall}
-            className="flex flex-col items-center gap-1 px-3 py-2 bg-green-200 rounded text-green-800 hover:bg-green-300 transition"
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded text-xs transition ${selectedBtn === 0 ? 'bg-green-300 text-green-800' : 'bg-green-200 text-green-700 hover:bg-green-300'}`}
           >
             <Phone className="h-5" />
-            <span className="text-xs">Ligar</span>
+            <span>Ligar</span>
           </button>
           <button
             onClick={handleSMS}
-            className="flex flex-col items-center gap-1 px-3 py-2 bg-blue-200 rounded text-blue-800 hover:bg-blue-300 transition"
+            className={`flex flex-col items-center gap-1 px-3 py-2 rounded text-xs transition ${selectedBtn === 1 ? 'bg-blue-300 text-blue-800' : 'bg-blue-200 text-blue-700 hover:bg-blue-300'}`}
           >
             <Mail className="h-5" />
-            <span className="text-xs">SMS</span>
+            <span>SMS</span>
           </button>
         </div>
       </div>
