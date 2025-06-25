@@ -5,6 +5,7 @@ import Menu from "./components/Menu";
 import ContactDetail from "./components/ContactDetail";
 import Contacts from "./components/Contacts";
 import Dialer from "./components/Dialer";
+import Calling from "./components/Calling";
 
 const menuItems = [
   "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
@@ -82,6 +83,7 @@ export default function App() {
     });
   });
   const [dialNumber, setDialNumber] = useState("");
+  const [calling, setCalling] = useState(false);
   const itemRefs = useRef([]);
   const contactRefs = useRef([]);
 
@@ -198,9 +200,7 @@ export default function App() {
   const handleDialCall = () => {
     beep();
     if (dialNumber) {
-      alert(`📞 Ligando para ${dialNumber}...`);
-      setDialNumber("");
-      setScreen("home");
+      setCalling(true);
     }
   };
 
@@ -226,6 +226,19 @@ export default function App() {
 
   // Renderiza o conteúdo da tela
   const renderScreen = () => {
+    if (calling) {
+      return (
+        <Calling
+          contact={null}
+          dialNumber={dialNumber}
+          onEnd={() => {
+            setCalling(false);
+            setDialNumber("");
+            setScreen("home");
+          }}
+        />
+      );
+    }
     if (screen === "home") {
       return <Home time={time} date={date} />;
     }
