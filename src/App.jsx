@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Menu, Delete } from "lucide-react"; // Importando Lucide Icons
 
-const menuItems = ["Mensagens", "Contatos", "Jogos", "Configurações"];
+const menuItems = ["Mensagens", "Contatos", "Jogos", "Configurações", ];
 
 export default function App() {
   const [selected, setSelected] = useState(0);
@@ -14,7 +15,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="relative flex flex-col items-center w-[360px] rounded-[32px] bg-gradient-to-b from-gray-800 via-gray-900 to-black border-[3px] border-gray-700 shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4 before:absolute before:inset-0 before:rounded-[32px] before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-gray-600 before:opacity-20 before:pointer-events-none">
+      <div className="relative flex flex-col items-center w-[340px] rounded-[32px] bg-gradient-to-b from-gray-800 via-gray-900 to-black border-[0px] border-gray-700 shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4">
         {/* Speaker */}
         <div className="w-16 h-2 bg-gradient-to-b from-gray-900 to-black rounded-full mt-2 mb-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-gray-800" />
 
@@ -24,7 +25,7 @@ export default function App() {
         </div>
 
         {/* Screen */}
-        <div className="w-[280px] h-[220px] rounded-lg border-4 border-gray-600 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4">
+        <div className="w-[280px] h-[220px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4">
           <div className="flex justify-between px-4 pt-2 text-green-700 text-2xl">
             <span>12:34</span>
             <span>🔋</span>
@@ -46,59 +47,67 @@ export default function App() {
         </div>
 
         {/* Keypad */}
-        <div className="flex flex-col items-center w-full  ">
-          {/* Navigation */}
-          {/* Botões de menu e direcionais estilo Nokia */}
-          <div className="flex flex-col items-center mb-2 w-full">
-            {/* Linha dos botões de menu */}
-            <div className="flex w-full justify-between mb-1 px-2">
-              <button className="w-14 h-8 rounded-lg bg-gradient-to-b from-blue-800 to-blue-600 border-2 border-blue-900 text-white text-sm font-bold shadow active:bg-blue-900">
-                {/* Ícone/menu esquerdo */}
-                <span className="text-lg">_</span>
-              </button>
-              <button className="w-14 h-8 rounded-lg bg-gradient-to-b from-blue-800 to-blue-600 border-2 border-blue-900 text-white text-sm font-bold shadow active:bg-blue-900">
-                {/* Ícone/menu direito */}
-                <span className="text-lg">_</span>
-              </button>
-            </div>
-            {/* Direcional em cruz */}
-            <div className="relative w-28 h-20 flex items-center justify-center">
-              {/* Cima */}
-              <button
-                onClick={() => handleKey("up")}
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-7 rounded-lg bg-gradient-to-b from-blue-700 to-blue-900 border-2 border-blue-900 text-white font-bold shadow active:bg-blue-900"
-              >
-                ▲
-              </button>
+        <div className="flex flex-col items-center w-full">
+          {/* Botões de menu com Lucide Icons */}
+          <div className="flex w-full justify-between items-center px-8  ">
+            <button
+              className="w-16 h-8 flex items-center justify-center rounded-2xl bg-gradient-to-b from-gray-100 via-blue-100 to-blue-300 border border-blue-700 shadow-[0_1px_4px_rgba(0,0,0,0.18),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-200 transition"
+              aria-label="Menu"
+            >
+              <Menu size={18} className="text-blue-900" />
+            </button>
+            <button
+              className="w-16 h-8 flex items-center justify-center rounded-2xl bg-gradient-to-b from-gray-100 via-blue-100 to-blue-300 border border-blue-700 shadow-[0_1px_4px_rgba(0,0,0,0.18),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-200 transition"
+              aria-label="Apagar"
+            >
+              <Delete size={18} className="text-blue-900" />
+            </button>
+          </div>
+          {/* Direcional em cruz, espaçado */}
+          <div className="flex flex-col items-center">
+            {/* Cima */}
+            <button
+              onClick={() => handleKey("up")}
+              className="w-12 h-10 mb-1 rounded-t-lg bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+            >
+              ▲
+            </button>
+            <div className="flex flex-row items-center">
               {/* Esquerda */}
-              <button className="absolute left-0 top-1/2 -translate-y-1/2 w-7 h-10 rounded-lg bg-gradient-to-b from-blue-700 to-blue-900 border-2 border-blue-900 text-white font-bold shadow active:bg-blue-900">
+              <button
+                className="w-10 h-12 mr-1 rounded-l-lg bg-gradient-to-r from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+              >
                 ◀
               </button>
               {/* Centro (OK) */}
-              <button className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-gradient-to-b from-blue-600 to-blue-900 border-2 border-blue-900 text-white text-lg font-bold shadow active:bg-blue-900">
+              <button
+                className="w-12 h-12 rounded-lg bg-gradient-to-b from-blue-100 via-blue-400 to-blue-900 border-2 border-blue-900 text-white text-lg font-bold shadow-[0_4px_16px_rgba(0,0,0,0.6),inset_0_2px_8px_rgba(255,255,255,0.5)] active:shadow-inner active:bg-blue-800 transition"
+              >
                 OK
               </button>
               {/* Direita */}
-              <button className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-10 rounded-lg bg-gradient-to-b from-blue-700 to-blue-900 border-2 border-blue-900 text-white font-bold shadow active:bg-blue-900">
+              <button
+                className="w-10 h-12 ml-1 rounded-r-lg bg-gradient-to-l from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+              >
                 ▶
               </button>
-              {/* Baixo */}
-              <button
-                onClick={() => handleKey("down")}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-7 rounded-lg bg-gradient-to-b from-blue-700 to-blue-900 border-2 border-blue-900 text-white font-bold shadow active:bg-blue-900"
-              >
-                ▼
-              </button>
             </div>
+            {/* Baixo */}
+            <button
+              onClick={() => handleKey("down")}
+              className="w-12 h-10 mt-1 rounded-b-lg bg-gradient-to-t from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+            >
+              ▼
+            </button>
           </div>
 
-          {/* Numpad */}
-          <div className="grid grid-cols-3  gap-3 mb-2 bg-gradient-to-b from-gray-900 to-black rounded-2xl p-3 border-4 border-gray-700 shadow-[inset_0_3px_8px_rgba(0,0,0,0.6),inset_0_-2px_4px_rgba(255,255,255,0.1)]">
+          {/* Numpad com o mesmo estilo dos direcionais */}
+          <div className="grid grid-cols-3 gap-2 mb-2 mt-2 bg-gradient-to-b from-gray-900 to-black rounded-2xl p-3 border-2 border-gray-700 shadow-[inset_0_3px_8px_rgba(0,0,0,0.6),inset_0_-2px_4px_rgba(255,255,255,0.1)]">
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
               (n) => (
                 <button
                   key={n}
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-500 border-2 border-gray-600 text-gray-900 text-3xl font-extrabold shadow-[0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_3px_rgba(255,255,255,0.4),inset_0_-1px_2px_rgba(0,0,0,0.2)] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] transition"
+                  className="w-16 h-12 rounded-lg bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-white text-2xl font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
                 >
                   {n}
                 </button>
