@@ -9,7 +9,7 @@ const THEMES = {
   classico: {
     carcaca: {
       backgroundImage: `
-        url('https:
+        url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'),
         linear-gradient(to bottom, #2d3748, #1a202c 60%, #000 100%)
       `,
       backgroundBlendMode: "overlay",
@@ -20,15 +20,12 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border-blue-900 text-white",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)]"
-    },
-    logo: {
-      color: "text-white", 
     }
   },
   metalico: {
     carcaca: {
       backgroundImage: `
-        url('https:
+        url('https://www.transparenttextures.com/patterns/brushed-alum.png'),
         linear-gradient(160deg, #e0e5ec 0%, #bfc7ce 40%, #6b7c93 100%)
       `,
       backgroundBlendMode: "overlay",
@@ -39,28 +36,23 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-gray-200 via-gray-400 to-gray-700 border-gray-500 text-gray-900",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.7)]"
-    },
-    logo: {
-      color: "text-gray-600", 
     }
-    }
-}
+  }
+};
 
 export default function App() {
   const [tema, setTema] = useState(() => {
     return localStorage.getItem("nokiaTema") || "classico";
   });
   const [selected, setSelected] = useState(0);
+  const [active, setActive] = useState(null);
   const [time, setTime] = useState(() => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   });
   const itemRefs = useRef([]);
 
-  useEffect(() => {
-    localStorage.setItem("nokiaTema", tema);
-  }, [tema]);
-
+  // Atualiza o relógio a cada segundo
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -69,6 +61,12 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Salva o tema no localStorage
+  useEffect(() => {
+    localStorage.setItem("nokiaTema", tema);
+  }, [tema]);
+
+  // Centraliza o item selecionado ao navegar
   useEffect(() => {
     if (itemRefs.current[selected]) {
       itemRefs.current[selected].scrollIntoView({
@@ -78,34 +76,59 @@ export default function App() {
     }
   }, [selected]);
 
+  // Função para tocar beep
+  const beep = () => {
+    const audio = new window.Audio("/beep.mp3");
+    audio.currentTime = 0;
+    audio.play();
+  };
+
+  // Navegação do menu
   const handleKey = (dir) => {
+    beep();
     if (dir === "up")
       setSelected((prev) => (prev === 0 ? menuItems.length - 1 : prev - 1));
     if (dir === "down")
       setSelected((prev) => (prev === menuItems.length - 1 ? 0 : prev + 1));
   };
 
+  // Selecionar item do menu
+  const handleSelect = () => {
+    beep();
+    setActive(selected);
+  };
+
+  // Atalhos de teclado físico (opcional)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "ArrowUp") handleKey("up");
+      if (e.key === "ArrowDown") handleKey("down");
+      if (e.key === "Enter") handleSelect();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line
+  }, [selected]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 select-none">
-      <button
-          onClick={() => setTema(tema === "classico" ? "metalico" : "classico")}
-          className="absolute top-2 right-2 px-3 py-1 rounded bg-gray-400 text-lg text-white opacity-70 hover:opacity-100 transition"
-        >
-          {tema === "classico" ? "Metálico" : "Clássico"}
-        </button>
-   
       <div
         className={`relative flex flex-col items-center w-[340px] rounded-[32px] border-[0px] ${THEMES[tema].border} shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4`}
         style={THEMES[tema].carcaca}
       >
         {/* Botão de alternância de tema */}
-     
+        <button
+          onClick={() => { beep(); setTema(tema === "classico" ? "metalico" : "classico"); }}
+          className="absolute top-2 right-2 px-3 py-1 rounded bg-gray-800 text-xs text-white opacity-70 hover:opacity-100 transition"
+        >
+          {tema === "classico" ? "Metálico" : "Clássico"}
+        </button>
 
         {/* Speaker */}
         <div className="w-16 h-2 bg-gradient-to-b from-gray-900 to-black rounded-full mt-2 mb-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-gray-800" />
 
         {/* Logo */}
-        <div className={`${THEMES[tema].logo.color} text-lg mb-2 drop-shadow-lg font-bold tracking-widest`}>
+        <div className="text-gray-300 text-lg mb-2 drop-shadow-lg font-bold tracking-widest">
           NOKIA
         </div>
 
@@ -120,11 +143,12 @@ export default function App() {
               <div
                 key={item}
                 ref={el => itemRefs.current[idx] = el}
-                className={`text-2xl px-2 rounded tracking-wide cursor-pointer ${
-                  selected === idx
-                    ? "bg-blue-200 text-blue-900"
-                    : "text-blue-900 opacity-70"
-                }`}
+                className={`text-2xl px-2 rounded tracking-wide cursor-pointer transition
+                  ${selected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
+                  ${active === idx ? "ring-2 ring-blue-500" : ""}
+                `}
+                onClick={() => { setSelected(idx); handleSelect(); beep(); }}
+                tabIndex={0}
               >
                 {item}
               </div>
@@ -139,12 +163,14 @@ export default function App() {
             <button
               className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Menu"
+              onClick={beep}
             >
               <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
             <button
               className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Apagar"
+              onClick={beep}
             >
               <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
@@ -162,18 +188,21 @@ export default function App() {
               {/* Esquerda */}
               <button
                 className={`w-10 h-12 mr-1 rounded-l-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                onClick={beep}
               >
                 ◀
               </button>
               {/* Centro (OK) */}
               <button
                 className={`w-12 h-12 rounded-lg ${THEMES[tema].button.bg} border-2 ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                onClick={handleSelect}
               >
                 OK
               </button>
               {/* Direita */}
               <button
                 className={`w-10 h-12 ml-1 rounded-r-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                onClick={beep}
               >
                 ▶
               </button>
@@ -194,6 +223,7 @@ export default function App() {
                 <button
                   key={n}
                   className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} text-2xl font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                  onClick={beep}
                 >
                   {n}
                 </button>
