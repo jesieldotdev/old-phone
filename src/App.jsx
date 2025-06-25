@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Menu from "./components/Menu";
 import ContactDetail from "./components/ContactDetail";
 import Contacts from "./components/Contacts";
+import Dialer from "./components/Dialer";
 
 const menuItems = [
   "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
@@ -80,6 +81,7 @@ export default function App() {
       month: '2-digit' 
     });
   });
+  const [dialNumber, setDialNumber] = useState("");
   const itemRefs = useRef([]);
   const contactRefs = useRef([]);
 
@@ -155,6 +157,8 @@ export default function App() {
     } else if (screen === "contacts") {
       setSelectedContact(contactsList[contactSelected]);
       setScreen("contact-detail");
+    } else if (screen === "dialer") {
+      handleDialCall();
     }
   };
 
@@ -168,6 +172,9 @@ export default function App() {
       setScreen("menu");
     } else if (screen === "contact-detail") {
       setScreen("contacts");
+    } else if (screen === "dialer") {
+      setDialNumber("");
+      setScreen("home");
     }
   };
 
@@ -187,18 +194,35 @@ export default function App() {
     }
   };
 
+  // Chamada a partir da tela de discagem
+  const handleDialCall = () => {
+    beep();
+    if (dialNumber) {
+      alert(`📞 Ligando para ${dialNumber}...`);
+      setDialNumber("");
+      setScreen("home");
+    }
+  };
+
   // Atalhos de teclado físico
   useEffect(() => {
     const onKeyDown = (e) => {
+      if (screen === "dialer" && /^[0-9*#]$/.test(e.key)) {
+        setDialNumber((prev) => prev + e.key);
+        beep();
+      }
       if (e.key === "ArrowUp") handleKey("up");
       if (e.key === "ArrowDown") handleKey("down");
       if (e.key === "Enter") handleSelect();
       if (e.key === "Escape") handleBack();
+      if (screen === "dialer" && (e.key === "Backspace" || e.key === "Delete")) {
+        setDialNumber((prev) => prev.slice(0, -1));
+        beep();
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-    // eslint-disable-next-line
-  }, [screen, selected, contactSelected]);
+  }, [screen, selected, contactSelected, dialNumber]);
 
   // Renderiza o conteúdo da tela
   const renderScreen = () => {
@@ -235,6 +259,16 @@ export default function App() {
           selectedContact={selectedContact}
           handleCall={handleCall}
           handleSMS={handleSMS}
+        />
+      );
+    }
+    if (screen === "dialer") {
+      return (
+        <Dialer
+          dialNumber={dialNumber}
+          setDialNumber={setDialNumber}
+          handleCall={handleDialCall}
+          handleBack={() => { beep(); setDialNumber(""); setScreen("home"); }}
         />
       );
     }
@@ -343,10 +377,19 @@ export default function App() {
                   key={n}
                   className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} text-2xl font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
                   onClick={() => {
-                    if(n === "0") {
-                      setScreen('home');
+                    beep();
+                    if (screen === "dialer") {
+                      // Adiciona o número ao dialNumber
+                      setDialNumber((prev) => prev + n);
+                    } else if (n === "*") {
+                      setScreen("dialer");
+                      setDialNumber("");
+                    } else if (n === "0") {
+                      setScreen("home");
+                    } else {
+                      setScreen("dialer");
+                      setDialNumber(n);
                     }
-                    beep()
                   }}
                 >
                   {n}
