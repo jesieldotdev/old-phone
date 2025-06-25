@@ -180,28 +180,28 @@ export default function App() {
             {/* Cima */}
             <button
               onClick={() => handleKey("up")}
-              className={`w-12 h-10 mb-1 rounded-t-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+              className={`w-16 h-10 mb-1 rounded-t-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
             >
               ▲
             </button>
             <div className="flex flex-row items-center">
               {/* Esquerda */}
               <button
-                className={`w-10 h-12 mr-1 rounded-l-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                className={`w-12 h-12 mr-1 rounded-l-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
                 onClick={beep}
               >
                 ◀
               </button>
               {/* Centro (OK) */}
               <button
-                className={`w-12 h-12 rounded-lg ${THEMES[tema].button.bg} border-2 ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} border-2 ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
                 onClick={handleSelect}
               >
                 OK
               </button>
               {/* Direita */}
               <button
-                className={`w-10 h-12 ml-1 rounded-r-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+                className={`w-12 h-12 ml-1 rounded-r-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
                 onClick={beep}
               >
                 ▶
@@ -210,7 +210,7 @@ export default function App() {
             {/* Baixo */}
             <button
               onClick={() => handleKey("down")}
-              className={`w-12 h-10 mt-1 rounded-b-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+              className={`w-16 h-10 mt-1 rounded-b-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
             >
               ▼
             </button>
