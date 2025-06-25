@@ -283,7 +283,7 @@ export default function App() {
                   setScreen("menu"); 
               }}
             >
-                <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
+                <Phone size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
             <button
               className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
