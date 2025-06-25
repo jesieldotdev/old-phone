@@ -5,7 +5,45 @@ const menuItems = [
   "Mensagens", "Contatos", "Jogos", "Configurações", 
 ];
 
+const THEMES = {
+  classico: {
+    carcaca: {
+      backgroundImage: `
+        url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'),
+        linear-gradient(to bottom, #2d3748, #1a202c 60%, #000 100%)
+      `,
+      backgroundBlendMode: "overlay",
+      backgroundSize: "auto, cover"
+    },
+    border: "border-gray-700",
+    keypad: "bg-gradient-to-b from-gray-900 to-black border-gray-700",
+    button: {
+      bg: "bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border-blue-900 text-white",
+      shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)]"
+    }
+  },
+  metalico: {
+    carcaca: {
+      backgroundImage: `
+        url('https://www.transparenttextures.com/patterns/brushed-alum.png'),
+        linear-gradient(160deg, #e0e5ec 0%, #bfc7ce 40%, #6b7c93 100%)
+      `,
+      backgroundBlendMode: "overlay",
+      backgroundSize: "auto, cover"
+    },
+    border: "border-gray-500",
+    keypad: "bg-gradient-to-b from-gray-700 to-gray-900 border-gray-500",
+    button: {
+      bg: "bg-gradient-to-b from-gray-200 via-gray-400 to-gray-700 border-gray-500 text-gray-900",
+      shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.7)]"
+    }
+  }
+};
+
 export default function App() {
+  const [tema, setTema] = useState(() => {
+    return localStorage.getItem("nokiaTema") || "classico";
+  });
   const [selected, setSelected] = useState(0);
   const [time, setTime] = useState(() => {
     const now = new Date();
@@ -13,7 +51,10 @@ export default function App() {
   });
   const itemRefs = useRef([]);
 
-  // Atualiza o relógio a cada segundo
+  useEffect(() => {
+    localStorage.setItem("nokiaTema", tema);
+  }, [tema]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -22,7 +63,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Centraliza o item selecionado ao navegar
   useEffect(() => {
     if (itemRefs.current[selected]) {
       itemRefs.current[selected].scrollIntoView({
@@ -41,7 +81,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 select-none">
-      <div className="relative flex flex-col items-center w-[340px] rounded-[32px] bg-gradient-to-b from-gray-800 via-gray-900 to-black border-[0px] border-gray-700 shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4">
+      <div
+        className={`relative flex flex-col items-center w-[340px] rounded-[32px] border-[0px] ${THEMES[tema].border} shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4`}
+        style={THEMES[tema].carcaca}
+      >
+        {/* Botão de alternância de tema */}
+        <button
+          onClick={() => setTema(tema === "classico" ? "metalico" : "classico")}
+          className="absolute top-2 right-2 px-3 py-1 rounded bg-gray-800 text-xs text-white opacity-70 hover:opacity-100 transition"
+        >
+          {tema === "classico" ? "Metálico" : "Clássico"}
+        </button>
+
         {/* Speaker */}
         <div className="w-16 h-2 bg-gradient-to-b from-gray-900 to-black rounded-full mt-2 mb-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-gray-800" />
 
@@ -78,16 +129,16 @@ export default function App() {
           {/* Botões de menu com Lucide Icons */}
           <div className="flex w-full justify-between items-center px-8">
             <button
-              className="w-16 h-8 flex items-center justify-center rounded-2xl bg-gradient-to-b from-gray-100 via-blue-100 to-blue-300 border border-blue-700 shadow-[0_1px_4px_rgba(0,0,0,0.18),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-200 transition"
+              className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Menu"
             >
-              <Menu size={18} className="text-blue-900" />
+              <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
             <button
-              className="w-16 h-8 flex items-center justify-center rounded-2xl bg-gradient-to-b from-gray-100 via-blue-100 to-blue-300 border border-blue-700 shadow-[0_1px_4px_rgba(0,0,0,0.18),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-200 transition"
+              className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Apagar"
             >
-              <Delete size={18} className="text-blue-900" />
+              <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
           </div>
           {/* Direcional em cruz, espaçado */}
@@ -95,26 +146,26 @@ export default function App() {
             {/* Cima */}
             <button
               onClick={() => handleKey("up")}
-              className="w-12 h-10 mb-1 rounded-t-lg bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+              className={`w-12 h-10 mb-1 rounded-t-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
             >
               ▲
             </button>
             <div className="flex flex-row items-center">
               {/* Esquerda */}
               <button
-                className="w-10 h-12 mr-1 rounded-l-lg bg-gradient-to-r from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+                className={`w-10 h-12 mr-1 rounded-l-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               >
                 ◀
               </button>
               {/* Centro (OK) */}
               <button
-                className="w-12 h-12 rounded-lg bg-gradient-to-b from-blue-100 via-blue-400 to-blue-900 border-2 border-blue-900 text-white text-lg font-bold shadow-[0_4px_16px_rgba(0,0,0,0.6),inset_0_2px_8px_rgba(255,255,255,0.5)] active:shadow-inner active:bg-blue-800 transition"
+                className={`w-12 h-12 rounded-lg ${THEMES[tema].button.bg} border-2 ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               >
                 OK
               </button>
               {/* Direita */}
               <button
-                className="w-10 h-12 ml-1 rounded-r-lg bg-gradient-to-l from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+                className={`w-10 h-12 ml-1 rounded-r-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               >
                 ▶
               </button>
@@ -122,19 +173,19 @@ export default function App() {
             {/* Baixo */}
             <button
               onClick={() => handleKey("down")}
-              className="w-12 h-10 mt-1 rounded-b-lg bg-gradient-to-t from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-blue-900 font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+              className={`w-12 h-10 mt-1 rounded-b-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
             >
               ▼
             </button>
           </div>
 
           {/* Numpad centralizado e estilizado */}
-          <div className="w-fit mx-auto grid grid-cols-3 gap-2 mb-2 mt-2 bg-gradient-to-b from-gray-900 to-black rounded-2xl p-3 border-2 border-gray-700 shadow-[inset_0_3px_8px_rgba(0,0,0,0.6),inset_0_-2px_4px_rgba(255,255,255,0.1)]">
+          <div className={`w-fit mx-auto grid grid-cols-3 gap-2 mb-2 mt-2 rounded-2xl p-3 border-2 ${THEMES[tema].keypad}`}>
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
               (n) => (
                 <button
                   key={n}
-                  className="w-16 h-12 rounded-lg bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border border-blue-900 text-white text-2xl font-bold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)] active:shadow-inner active:bg-blue-800 transition"
+                  className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} text-2xl font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
                 >
                   {n}
                 </button>
