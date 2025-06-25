@@ -20,12 +20,12 @@ export default function Home({ time, date }) {
         {date}
       </div>
       {/* Informações adicionais */}
-      <div className="text-sm text-green-600 space-y-1">
-        <div className="flex items-center justify-center gap-1"><Mail className="h-3"/> 2 mensagens</div>
+      <div className="text-lg font-semibold text-green-800 space-y-1 ">
+        <div className="flex items-center justify-left gap-1"><Mail className="h-3"/> 2 mensagens</div>
         <div className="flex items-center justify-center gap-1"><Phone className="h-3"/> 1 chamada perdida</div>
       </div>
       {/* Instrução */}
-      <div className="absolute bottom-2 text-xs text-green-600">
+      <div className="absolute bottom-2 text-lg text-green-600">
         Pressione OK para Menu
       </div>
     </div>
