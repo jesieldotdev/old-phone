@@ -143,7 +143,7 @@ export default function App() {
               <div
                 key={item}
                 ref={el => itemRefs.current[idx] = el}
-                className={`text-2xl px-2 rounded tracking-wide cursor-pointer transition
+                className={`text-3xl px-2 rounded tracking-wide cursor-pointer transition
                   ${selected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
                   ${active === idx ? "ring-2 ring-blue-500" : ""}
                 `}
