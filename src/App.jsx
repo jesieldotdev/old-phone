@@ -6,7 +6,7 @@ import ContactDetail from "./components/ContactDetail";
 import Contacts from "./components/Contacts";
 
 const menuItems = [
-  "Contatos", "Mensagens", "Jogos", "Configurações", 
+  "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
 ];
 
 const contactsList = [
@@ -37,7 +37,8 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-blue-200 via-blue-400 to-blue-800 border-blue-900 text-white",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(255,255,255,0.7)]"
-    }
+    },
+    logo: "text-white", // Azul escuro para fundo clássico
   },
   metalico: {
     carcaca: {
@@ -53,7 +54,8 @@ const THEMES = {
     button: {
       bg: "bg-gradient-to-b from-gray-200 via-gray-400 to-gray-700 border-gray-500 text-gray-900",
       shadow: "shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.7)]"
-    }
+    },
+    logo: "text-blue-700", // Branco para fundo metálico
   }
 };
 
@@ -256,17 +258,14 @@ export default function App() {
         <div className="w-16 h-2 bg-gradient-to-b from-gray-900 to-black rounded-full mt-2 mb-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-gray-800" />
 
         {/* Logo */}
-        <div className="text-gray-300 text-lg mb-2 drop-shadow-lg font-bold tracking-widest">
+        <div className={`${THEMES[tema].logo} text-lg mb-2 drop-shadow-lg font-bold tracking-widest`}>
           NOKIA
         </div>
 
         {/* Screen */}
         <div
           className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4 relative"
-          style={{
-            imageRendering: "pixelated",
-            filter: "contrast(85%) saturate(120%)",
-          }}
+   
         >
           {renderScreen()}
         </div>

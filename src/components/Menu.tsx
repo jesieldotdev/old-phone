@@ -7,7 +7,7 @@ export default function Menu({ time, menuItems, selected, active, itemRefs, setS
         <span>{time}</span>
         <span><BatteryFull className="h-6"/></span>
       </div>
-      <div className="flex-1 flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
+      <div className="flex-1 flex flex-col gap-2 mt-4 pl-6 pr-2  overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
         {menuItems &&  menuItems.length &&  menuItems.map((item, idx) => (
           <div
             key={item}
