@@ -1,8 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Menu, Delete, Signal, BatteryFull, Phone, Mail } from "lucide-react";
+import { Signal, BatteryFull, Phone, Mail, User, Star, Delete } from "lucide-react";
+import Home from "./components/Home";
+import Menu from "./components/Menu";
+import ContactDetail from "./components/ContactDetail";
+import Contacts from "./components/Contacts";
 
 const menuItems = [
-  "Mensagens", "Contatos", "Jogos", "Configurações", 
+  "Contatos", "Mensagens", "Jogos", "Configurações", 
+];
+
+const contactsList = [
+  { name: "Ana Silva", number: "(11) 99999-1234", favorite: true },
+  { name: "Bruno Costa", number: "(11) 98888-5678", favorite: false },
+  { name: "Carlos Mendes", number: "(11) 97777-9012", favorite: true },
+  { name: "Diana Santos", number: "(11) 96666-3456", favorite: false },
+  { name: "Eduardo Lima", number: "(11) 95555-7890", favorite: false },
+  { name: "Fernanda Rocha", number: "(11) 94444-2345", favorite: true },
+  { name: "Gabriel Alves", number: "(11) 93333-6789", favorite: false },
+  { name: "Helena Martins", number: "(11) 92222-0123", favorite: false },
+  { name: "Igor Pereira", number: "(11) 91111-4567", favorite: false },
+  { name: "Julia Ferreira", number: "(11) 90000-8901", favorite: true },
 ];
 
 const THEMES = {
@@ -44,8 +61,10 @@ export default function App() {
   const [tema, setTema] = useState(() => {
     return localStorage.getItem("nokiaTema") || "classico";
   });
-  const [screen, setScreen] = useState("home"); // "home" ou "menu"
+  const [screen, setScreen] = useState("home"); // "home", "menu", "contacts", "contact-detail"
   const [selected, setSelected] = useState(0);
+  const [contactSelected, setContactSelected] = useState(0);
+  const [selectedContact, setSelectedContact] = useState(null);
   const [active, setActive] = useState(null);
   const [time, setTime] = useState(() => {
     const now = new Date();
@@ -60,6 +79,7 @@ export default function App() {
     });
   });
   const itemRefs = useRef([]);
+  const contactRefs = useRef([]);
 
   // Atualiza o relógio e data a cada segundo
   useEffect(() => {
@@ -88,7 +108,13 @@ export default function App() {
         behavior: "smooth"
       });
     }
-  }, [selected, screen]);
+    if (contactRefs.current[contactSelected] && screen === "contacts") {
+      contactRefs.current[contactSelected].scrollIntoView({
+        block: "center",
+        behavior: "smooth"
+      });
+    }
+  }, [selected, contactSelected, screen]);
 
   // Função para tocar beep
   const beep = () => {
@@ -105,6 +131,11 @@ export default function App() {
         setSelected((prev) => (prev === 0 ? menuItems.length - 1 : prev - 1));
       if (dir === "down")
         setSelected((prev) => (prev === menuItems.length - 1 ? 0 : prev + 1));
+    } else if (screen === "contacts") {
+      if (dir === "up")
+        setContactSelected((prev) => (prev === 0 ? contactsList.length - 1 : prev - 1));
+      if (dir === "down")
+        setContactSelected((prev) => (prev === contactsList.length - 1 ? 0 : prev + 1));
     }
   };
 
@@ -115,15 +146,42 @@ export default function App() {
       setScreen("menu");
     } else if (screen === "menu") {
       setActive(selected);
+      if (menuItems[selected] === "Contatos") {
+        setScreen("contacts");
+        setContactSelected(0);
+      }
+    } else if (screen === "contacts") {
+      setSelectedContact(contactsList[contactSelected]);
+      setScreen("contact-detail");
     }
   };
 
-  // Voltar para tela inicial
+  // Voltar para tela anterior
   const handleBack = () => {
     beep();
     if (screen === "menu") {
       setScreen("home");
       setActive(null);
+    } else if (screen === "contacts") {
+      setScreen("menu");
+    } else if (screen === "contact-detail") {
+      setScreen("contacts");
+    }
+  };
+
+  // Ação de ligar
+  const handleCall = () => {
+    beep();
+    if (selectedContact) {
+      alert(`📞 Ligando para ${selectedContact.name}...\n${selectedContact.number}`);
+    }
+  };
+
+  // Ação de enviar SMS
+  const handleSMS = () => {
+    beep();
+    if (selectedContact) {
+      alert(`💬 Enviando SMS para ${selectedContact.name}...\n${selectedContact.number}`);
     }
   };
 
@@ -138,70 +196,44 @@ export default function App() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
     // eslint-disable-next-line
-  }, [screen, selected]);
+  }, [screen, selected, contactSelected]);
 
   // Renderiza o conteúdo da tela
   const renderScreen = () => {
     if (screen === "home") {
-      return (
-        <div className="flex flex-col items-center mt-2 h-full text-center">
-          {/* Operadora e sinal */}
-          <div className="flex justify-between w-full px-4 mb-2">
-            <div className="flex items-center gap-1 text-sm text-green-700">
-              <Signal className="h-5"/>
-              <span>Vivo</span>
-            </div>
-            <div className="text-sm text-green-700"><BatteryFull className="h-6"/></div>
-          </div>
-          
-          {/* Hora principal */}
-          <div className="text-6xl font-bold text-green-800 mb-2">
-            {time}
-          </div>
-          
-          {/* Data */}
-          <div className="text-lg text-green-700 mb-4 capitalize">
-            {date}
-          </div>
-          
-          {/* Informações adicionais */}
-          <div className="text-sm text-green-600 space-y-1">
-            <div className="flex items-center"><Mail className="h-3"/> 2 mensagens</div>
-            <div className="flex items-center"><Phone className="h-3"/> 1 chamada perdida</div>
-          </div>
-          
-          {/* Instrução */}
-          <div className="absolute bottom-2 text-xs text-green-600">
-            Pressione OK para Menu
-          </div>
-        </div>
-      );
+      return <Home time={time} date={date} />;
     }
-
     if (screen === "menu") {
       return (
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between px-4 pt-2 text-green-700 text-xl">
-            <span>{time}</span>
-            <span><BatteryFull className="h-6"/></span>
-          </div>
-          <div className="flex-1 flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
-            {menuItems.map((item, idx) => (
-              <div
-                key={item}
-                ref={el => itemRefs.current[idx] = el}
-                className={`text-3xl px-2 rounded tracking-wide cursor-pointer transition
-                  ${selected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
-                  ${active === idx ? "ring-2 ring-blue-500" : ""}
-                `}
-                onClick={() => { setSelected(idx); handleSelect(); }}
-                tabIndex={0}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Menu
+          time={time}
+          menuItems={menuItems}
+          selected={selected}
+          active={active}
+          itemRefs={itemRefs}
+          setSelected={setSelected}
+          handleSelect={handleSelect}
+        />
+      );
+    }
+    if (screen === "contacts") {
+      return (
+        <Contacts
+          contactsList={contactsList}
+          contactSelected={contactSelected}
+          contactRefs={contactRefs}
+          setContactSelected={setContactSelected}
+          handleSelect={handleSelect}
+        />
+      );
+    }
+    if (screen === "contact-detail") {
+      return (
+        <ContactDetail
+          selectedContact={selectedContact}
+          handleCall={handleCall}
+          handleSMS={handleSMS}
+        />
       );
     }
   };
@@ -229,7 +261,13 @@ export default function App() {
         </div>
 
         {/* Screen */}
-        <div className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4 relative">
+        <div
+          className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4 relative"
+          style={{
+            imageRendering: "pixelated",
+            filter: "contrast(85%) saturate(120%)",
+          }}
+        >
           {renderScreen()}
         </div>
 
@@ -240,16 +278,21 @@ export default function App() {
             <button
               className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Menu"
-              onClick={() => { beep(); setScreen("menu"); }}
+              onClick={() => { 
+                beep(); 
+       
+                  setScreen("menu"); 
+              }}
             >
-              <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
+                <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
             <button
               className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Voltar"
               onClick={handleBack}
             >
-              <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
+         
+                <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
           </div>
           {/* Direcional em cruz, espaçado */}
@@ -300,7 +343,12 @@ export default function App() {
                 <button
                   key={n}
                   className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} text-2xl font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
-                  onClick={beep}
+                  onClick={() => {
+                    if(n === "0") {
+                      setScreen('home');
+                    }
+                    beep()
+                  }}
                 >
                   {n}
                 </button>
