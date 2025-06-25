@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Menu, Delete } from "lucide-react";
+import { Menu, Delete, Signal, BatteryFull, Phone, Mail } from "lucide-react";
 
 const menuItems = [
   "Mensagens", "Contatos", "Jogos", "Configurações", 
@@ -44,19 +44,33 @@ export default function App() {
   const [tema, setTema] = useState(() => {
     return localStorage.getItem("nokiaTema") || "classico";
   });
+  const [screen, setScreen] = useState("home"); // "home" ou "menu"
   const [selected, setSelected] = useState(0);
   const [active, setActive] = useState(null);
   const [time, setTime] = useState(() => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   });
+  const [date, setDate] = useState(() => {
+    const now = new Date();
+    return now.toLocaleDateString('pt-BR', { 
+      weekday: 'short', 
+      day: '2-digit', 
+      month: '2-digit' 
+    });
+  });
   const itemRefs = useRef([]);
 
-  // Atualiza o relógio a cada segundo
+  // Atualiza o relógio e data a cada segundo
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setDate(now.toLocaleDateString('pt-BR', { 
+        weekday: 'short', 
+        day: '2-digit', 
+        month: '2-digit' 
+      }));
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -68,52 +82,134 @@ export default function App() {
 
   // Centraliza o item selecionado ao navegar
   useEffect(() => {
-    if (itemRefs.current[selected]) {
+    if (itemRefs.current[selected] && screen === "menu") {
       itemRefs.current[selected].scrollIntoView({
         block: "center",
         behavior: "smooth"
       });
     }
-  }, [selected]);
+  }, [selected, screen]);
 
   // Função para tocar beep
   const beep = () => {
     const audio = new window.Audio("/beep.mp3");
     audio.currentTime = 0;
-    audio.play();
+    audio.play().catch(() => {}); // Ignora erro se não houver áudio
   };
 
   // Navegação do menu
   const handleKey = (dir) => {
     beep();
-    if (dir === "up")
-      setSelected((prev) => (prev === 0 ? menuItems.length - 1 : prev - 1));
-    if (dir === "down")
-      setSelected((prev) => (prev === menuItems.length - 1 ? 0 : prev + 1));
+    if (screen === "menu") {
+      if (dir === "up")
+        setSelected((prev) => (prev === 0 ? menuItems.length - 1 : prev - 1));
+      if (dir === "down")
+        setSelected((prev) => (prev === menuItems.length - 1 ? 0 : prev + 1));
+    }
   };
 
   // Selecionar item do menu
   const handleSelect = () => {
     beep();
-    setActive(selected);
+    if (screen === "home") {
+      setScreen("menu");
+    } else if (screen === "menu") {
+      setActive(selected);
+    }
   };
 
-  // Atalhos de teclado físico (opcional)
+  // Voltar para tela inicial
+  const handleBack = () => {
+    beep();
+    if (screen === "menu") {
+      setScreen("home");
+      setActive(null);
+    }
+  };
+
+  // Atalhos de teclado físico
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "ArrowUp") handleKey("up");
       if (e.key === "ArrowDown") handleKey("down");
       if (e.key === "Enter") handleSelect();
+      if (e.key === "Escape") handleBack();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
     // eslint-disable-next-line
-  }, [selected]);
+  }, [screen, selected]);
+
+  // Renderiza o conteúdo da tela
+  const renderScreen = () => {
+    if (screen === "home") {
+      return (
+        <div className="flex flex-col items-center mt-2 h-full text-center">
+          {/* Operadora e sinal */}
+          <div className="flex justify-between w-full px-4 mb-2">
+            <div className="flex items-center gap-1 text-sm text-green-700">
+              <Signal className="h-5"/>
+              <span>Vivo</span>
+            </div>
+            <div className="text-sm text-green-700"><BatteryFull className="h-6"/></div>
+          </div>
+          
+          {/* Hora principal */}
+          <div className="text-6xl font-bold text-green-800 mb-2">
+            {time}
+          </div>
+          
+          {/* Data */}
+          <div className="text-lg text-green-700 mb-4 capitalize">
+            {date}
+          </div>
+          
+          {/* Informações adicionais */}
+          <div className="text-sm text-green-600 space-y-1">
+            <div className="flex items-center"><Mail className="h-3"/> 2 mensagens</div>
+            <div className="flex items-center"><Phone className="h-3"/> 1 chamada perdida</div>
+          </div>
+          
+          {/* Instrução */}
+          <div className="absolute bottom-2 text-xs text-green-600">
+            Pressione OK para Menu
+          </div>
+        </div>
+      );
+    }
+
+    if (screen === "menu") {
+      return (
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between px-4 pt-2 text-green-700 text-xl">
+            <span>{time}</span>
+            <span><BatteryFull className="h-6"/></span>
+          </div>
+          <div className="flex-1 flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
+            {menuItems.map((item, idx) => (
+              <div
+                key={item}
+                ref={el => itemRefs.current[idx] = el}
+                className={`text-3xl px-2 rounded tracking-wide cursor-pointer transition
+                  ${selected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
+                  ${active === idx ? "ring-2 ring-blue-500" : ""}
+                `}
+                onClick={() => { setSelected(idx); handleSelect(); }}
+                tabIndex={0}
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 select-none">
       <div
-        className={`relative flex flex-col items-center w-[340px] rounded-[32px] border-[0px] ${THEMES[tema].border} shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4`}
+        className={`relative flex flex-col items-center w-[340px] rounded-[100px] border-[0px] ${THEMES[tema].border} shadow-[0_12px_50px_12px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.3)] pb-8 pt-4`}
         style={THEMES[tema].carcaca}
       >
         {/* Botão de alternância de tema */}
@@ -133,27 +229,8 @@ export default function App() {
         </div>
 
         {/* Screen */}
-        <div className="w-[280px] h-[220px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4">
-          <div className="flex justify-between px-4 pt-2 text-green-700 text-2xl">
-            <span>{time}</span>
-            <span>🔋</span>
-          </div>
-          <div className="flex flex-col gap-2 mt-4 pl-6 pr-2 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
-            {menuItems.map((item, idx) => (
-              <div
-                key={item}
-                ref={el => itemRefs.current[idx] = el}
-                className={`text-3xl px-2 rounded tracking-wide cursor-pointer transition
-                  ${selected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
-                  ${active === idx ? "ring-2 ring-blue-500" : ""}
-                `}
-                onClick={() => { setSelected(idx); handleSelect(); beep(); }}
-                tabIndex={0}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
+        <div className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 bg-gradient-to-b from-green-100 to-green-200 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.5)] flex flex-col justify-start mb-4 relative">
+          {renderScreen()}
         </div>
 
         {/* Keypad */}
@@ -161,16 +238,16 @@ export default function App() {
           {/* Botões de menu com Lucide Icons */}
           <div className="flex w-full justify-between items-center px-8">
             <button
-              className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+              className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Menu"
-              onClick={beep}
+              onClick={() => { beep(); setScreen("menu"); }}
             >
               <Menu size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
             <button
-              className={`w-16 h-8 flex items-center justify-center rounded-2xl ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
-              aria-label="Apagar"
-              onClick={beep}
+              className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+              aria-label="Voltar"
+              onClick={handleBack}
             >
               <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
             </button>
