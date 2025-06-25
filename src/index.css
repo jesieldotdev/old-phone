@@ -4,6 +4,8 @@ body {
   background: #222;
   font-family: 'VT323', monospace, 'Courier New', monospace;
 
-
+::-webkit-scrollbar {
+display: none;
+}
 }
 

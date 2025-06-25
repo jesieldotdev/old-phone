@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Menu, Delete } from "lucide-react";
 
 const menuItems = [
-  "Mensagens", "Contatos", "Jogos", "Configurações", "Agenda",
-  "Galeria", "Rádio", "Alarme", "Calculadora", "Relógio"
+  "Mensagens", "Contatos", "Jogos", "Configurações", 
 ];
 
 export default function App() {
