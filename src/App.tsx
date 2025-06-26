@@ -312,15 +312,22 @@ export default function App() {
         </div>
 
         {/* Screen */}
+<div className="relative w-[280px] h-[260px] rounded-lg overflow-hidden crt mb-4 border-4 border-gray-900">
+  {/* Tela original */}
   <div
-  className="w-[280px] h-[260px] rounded-lg border-4 border-gray-900 flex flex-col justify-start mb-4 relative"
-  style={{
+    className="w-full h-full flex flex-col justify-start"
+    style={{
       backgroundImage: `linear-gradient(to bottom, #e0f7fa, #b2ebf2)`,
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-  }}
->
-  {renderScreen()}
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}
+  >
+    {renderScreen()}
+  </div>
+  {/* Overlays CRT */}
+  <div className="pointer-events-none absolute inset-0 z-10 crt-scanline" />
+  <div className="pointer-events-none absolute inset-0 z-20 crt-vignette" />
+  <div className="pointer-events-none absolute inset-0 z-30 crt-glass" />
 </div>
 
         {/* Keypad */}
