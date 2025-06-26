@@ -9,6 +9,7 @@ import Calling from "./components/Calling";
 import GamesMenu from "./components/GamesMenu";
 import SnakeGame from "./components/SnakeGame";
 import SpaceImpact from "./components/SpaceImpact";
+import Settings from "./components/Settings";
 import { useMenuNavigation } from "./hooks/useMenuNavigation";
 import {useKeypad} from './contexts/KeypadContext'
 
@@ -103,6 +104,10 @@ export default function App() {
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const contactRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [gameScreen, setGameScreen] = useState<null | "menu" | "snake">(null);
+  const [soundOn, setSoundOn] = useState(() => {
+    const saved = localStorage.getItem("nokiaSound");
+    return saved === null ? true : saved === "true";
+  });
 
   // Atualiza o relógio e data a cada segundo
   useEffect(() => {
@@ -123,6 +128,11 @@ export default function App() {
     localStorage.setItem("nokiaTema", tema);
   }, [tema]);
 
+  // Salva o estado do som no localStorage
+  useEffect(() => {
+    localStorage.setItem("nokiaSound", soundOn.toString());
+  }, [soundOn]);
+
   // Centraliza o item selecionado ao navegar
   useEffect(() => {
     if (itemRefs.current[selected] && screen === "menu") {
@@ -141,9 +151,10 @@ export default function App() {
 
   // Função para tocar beep
   const beep = () => {
+    if (!soundOn) return;
     const audio = new window.Audio("/beep.mp3");
     audio.currentTime = 0;
-    audio.play().catch(() => { }); // Ignora erro se não houver áudio
+    audio.play().catch(() => { });
   };
 
   // Navegação do menu
@@ -186,6 +197,9 @@ export default function App() {
       else if (menuItems[selected] === "Jogos") {
         setScreen("games-menu");
         setSelectedGame(0);
+      }
+      else if (menuItems[selected] === "Configurações") {
+        setScreen("settings");
       }
     } else if (screen === "contacts") {
       setSelectedContact(contactsList[contactSelected]);
@@ -344,6 +358,15 @@ export default function App() {
             setDialNumber("");
             setScreen("home");
           }}
+        />
+      );
+    }
+    if (screen === "settings") {
+      return (
+        <Settings
+          soundOn={soundOn}
+          setSoundOn={setSoundOn}
+          onBack={() => setScreen("menu")}
         />
       );
     }
