@@ -6,6 +6,8 @@ import ContactDetail from "./components/ContactDetail";
 import Contacts from "./components/Contacts";
 import Dialer from "./components/Dialer";
 import Calling from "./components/Calling";
+import GamesMenu from "./components/GamesMenu";
+import SnakeGame from "./components/SnakeGame";
 
 const menuItems = [
   "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
@@ -76,26 +78,27 @@ export default function App() {
   });
   const [date, setDate] = useState(() => {
     const now = new Date();
-    return now.toLocaleDateString('pt-BR', { 
-      weekday: 'short', 
-      day: '2-digit', 
-      month: '2-digit' 
+    return now.toLocaleDateString('pt-BR', {
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit'
     });
   });
   const [dialNumber, setDialNumber] = useState("");
   const [calling, setCalling] = useState(false);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const contactRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const [gameScreen, setGameScreen] = useState<null | "menu" | "snake">(null);
 
   // Atualiza o relógio e data a cada segundo
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      setDate(now.toLocaleDateString('pt-BR', { 
-        weekday: 'short', 
-        day: '2-digit', 
-        month: '2-digit' 
+      setDate(now.toLocaleDateString('pt-BR', {
+        weekday: 'short',
+        day: '2-digit',
+        month: '2-digit'
       }));
     }, 1000);
     return () => clearInterval(interval);
@@ -126,7 +129,7 @@ export default function App() {
   const beep = () => {
     const audio = new window.Audio("/beep.mp3");
     audio.currentTime = 0;
-    audio.play().catch(() => {}); // Ignora erro se não houver áudio
+    audio.play().catch(() => { }); // Ignora erro se não houver áudio
   };
 
   // Navegação do menu
@@ -156,12 +159,16 @@ export default function App() {
         setScreen("contacts");
         setContactSelected(0);
       }
+      else if (menuItems[selected] === "Jogos") {
+      setGameScreen("menu");
+    }
     } else if (screen === "contacts") {
       setSelectedContact(contactsList[contactSelected]);
       setScreen("contact-detail");
     } else if (screen === "dialer") {
       handleDialCall();
     }
+    
   };
 
   // Voltar para tela anterior
@@ -239,6 +246,20 @@ export default function App() {
         />
       );
     }
+
+    if (gameScreen === "menu") {
+      return (
+        <GamesMenu
+          onSelect={(game) => {
+            if (game === "Snake") setGameScreen("snake");
+          }}
+          onExit={() => setGameScreen(null)}
+        />
+      );
+    }
+    if (gameScreen === "snake") {
+      return <SnakeGame onExit={() => setGameScreen("menu")} />;
+    }
     if (screen === "home") {
       return <Home time={time} date={date} />;
     }
@@ -312,23 +333,23 @@ export default function App() {
         </div>
 
         {/* Screen */}
-<div className="relative w-[280px] h-[260px] rounded-lg overflow-hidden crt mb-4 border-4 border-gray-900">
-  {/* Conteúdo da tela */}
-  <div
-    className="w-full h-full flex flex-col justify-start"
-    style={{
-      backgroundImage: `linear-gradient(to bottom, #e0f7fa, #b2ebf2)`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}
-  >
-    {renderScreen()}
-  </div>
-  {/* Overlay scanline - sempre por cima */}
-  <div className="pointer-events-none absolute inset-0 z-10 crt-scanline" />
-  {/* (opcional) Overlay glass, vignette, etc */}
-  <div className="pointer-events-none absolute inset-0 z-20 crt-glass" />
-</div>
+        <div className="relative w-[280px] h-[260px] rounded-lg overflow-hidden crt mb-4 border-4 border-gray-900">
+          {/* Conteúdo da tela */}
+          <div
+            className="w-full h-full flex flex-col justify-start"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, #e0f7fa, #b2ebf2)`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {renderScreen()}
+          </div>
+          {/* Overlay scanline - sempre por cima */}
+          <div className="pointer-events-none absolute inset-0 z-10 crt-scanline" />
+          {/* (opcional) Overlay glass, vignette, etc */}
+          <div className="pointer-events-none absolute inset-0 z-20 crt-glass" />
+        </div>
 
         {/* Keypad */}
         <div className="flex flex-col items-center w-full">
@@ -339,7 +360,7 @@ export default function App() {
               aria-label="Menu"
               onClick={() => { beep(); setScreen("menu"); }}
             >
-                <Phone size={18} className={"text-green-400 " } />
+              <Phone size={18} className={"text-green-400 "} />
             </button>
             <button
               className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
@@ -355,8 +376,8 @@ export default function App() {
                 }
               }}
             >
-         
-             <Phone size={18} className="text-red-400 rotate-180" />
+
+              <Phone size={18} className="text-red-400 rotate-180" />
             </button>
           </div>
           {/* Direcional em cruz, espaçado */}
