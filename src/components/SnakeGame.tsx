@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useKeypad } from "../contexts/KeypadContext";
 
-type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 type Cell = [number, number];
 
 const GRID_SIZE = 17;
@@ -27,14 +26,15 @@ function getRandomCell(snake: Cell[]): Cell {
 
 export default function SnakeGame({
   onExit,
-  setDirection,
-  direction
+  // setDirection,
+  // direction
 }: {
   onExit?: () => void;
-  setDirection: React.Dispatch<React.SetStateAction<Direction>>
-  direction: Direction
+  // setDirection: React.Dispatch<React.SetStateAction<Direction>>
+  // direction: Direction
 }) {
   const [snake, setSnake] = useState<Cell[]>(INITIAL_SNAKE);
+  const { direction, setDirection, actionKey } = useKeypad();
   // const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION);
   const [food, setFood] = useState<Cell>(getRandomCell(INITIAL_SNAKE));
   const [score, setScore] = useState(0);
@@ -103,7 +103,7 @@ export default function SnakeGame({
   // Controles de teclado
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (gameOver && e.key === "Enter") {
+      if (gameOver && e.key === "Enter" || gameOver && actionKey === "ENTER") {
         restart();
         return;
       }

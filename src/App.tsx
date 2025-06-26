@@ -9,8 +9,8 @@ import Calling from "./components/Calling";
 import GamesMenu from "./components/GamesMenu";
 import SnakeGame from "./components/SnakeGame";
 import { useMenuNavigation } from "./hooks/useMenuNavigation";
+import {useKeypad} from './contexts/KeypadContext'
 
-type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
 const menuItems = [
   "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
@@ -80,7 +80,7 @@ export default function App() {
   });
   const [screen, setScreen] = useState("home"); // "home", "menu", "contacts", "contact-detail"
   const [selected, setSelected] = useState(0);
-  const [direction, setDirection] = useState<Direction>('UP')
+  const {direction, setDirection, setActionKey} = useKeypad();
   const [selectedGame, setSelectedGame] = useState(0);
   const [contactSelected, setContactSelected] = useState(0);
   const [selectedContact, setSelectedContact] = useState<{ name: string; number: string; favorite: boolean } | null>(null);
@@ -287,7 +287,7 @@ export default function App() {
       );
     }
     if (screen === "snake") {
-      return <SnakeGame direction={direction} setDirection={setDirection} onExit={() => setGameScreen("menu")} />;
+      return <SnakeGame  onExit={() => setGameScreen("menu")} />;
     }
     if (screen === "home") {
       return <Home time={time} date={date} />;
@@ -432,7 +432,10 @@ export default function App() {
               {/* Centro (OK) */}
               <button
                 className={`w-16 h-12 rounded-lg ${THEMES[tema].button.bg} border-2 ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
-                onClick={handleSelect}
+                onClick={() => {
+                  handleSelect()
+                  setActionKey("ENTER")
+                }}
               >
                 OK
               </button>

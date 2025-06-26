@@ -1,40 +1,30 @@
-import React, { createContext, useContext, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState } from "react";
 
-type KeyHandler = (e: KeyboardEvent) => void;
+type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT" ;
+type ActionKey = "ENTER" | "ESCAPE" | null
 
 interface KeypadContextProps {
-  subscribe: (handler: KeyHandler) => () => void;
+  direction: Direction;
+  setDirection: React.Dispatch<React.SetStateAction<Direction>>;
+  actionKey: ActionKey | undefined
+  setActionKey: React.Dispatch<React.SetStateAction<Direction | undefined>>
 }
 
 const KeypadContext = createContext<KeypadContextProps | undefined>(undefined);
 
 export function KeypadProvider({ children }: { children: React.ReactNode }) {
-  const handlers = useRef<Set<KeyHandler>>(new Set());
-
-  useEffect(() => {
-    const listener = (e: KeyboardEvent) => {
-      handlers.current.forEach((h) => h(e));
-    };
-    window.addEventListener("keydown", listener);
-    return () => window.removeEventListener("keydown", listener);
-  }, []);
-
-  const subscribe = (handler: KeyHandler) => {
-    handlers.current.add(handler);
-    return () => handlers.current.delete(handler);
-  };
+  const [direction, setDirection] = useState<Direction>('UP');
+  const [actionKey, setActionKey] = useState<Direction>();
 
   return (
-    <KeypadContext.Provider value={{ subscribe }}>
+    <KeypadContext.Provider value={{ direction, setDirection, setActionKey, actionKey }}>
       {children}
     </KeypadContext.Provider>
   );
 }
 
-export function useKeypad(handler: KeyHandler) {
+export function useKeypad() {
   const ctx = useContext(KeypadContext);
-  useEffect(() => {
-    if (!ctx) return;
-    return ctx.subscribe(handler);
-  }, [ctx, handler]);
+  if (!ctx) throw new Error("useKeypad deve ser usado dentro de KeypadProvider");
+  return ctx;
 }
