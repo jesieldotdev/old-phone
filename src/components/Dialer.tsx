@@ -1,6 +1,25 @@
 import { Phone } from "lucide-react";
+import { useKeypad } from "../contexts/KeypadContext";
 
-export default function Dialer({ dialNumber }) {
+interface DialerProps {
+  dialNumber: string;
+  setDialNumber: (n: string) => void;
+  handleBack: () => void;
+}
+
+export default function Dialer({ dialNumber, setDialNumber, handleBack }: DialerProps) {
+  useKeypad((e) => {
+    if (/^[0-9*#]$/.test(e.key)) {
+      setDialNumber(dialNumber + e.key);
+    }
+    if (e.key === "Backspace" || e.key === "Delete") {
+      setDialNumber(dialNumber.slice(0, -1));
+    }
+    if (e.key === "Escape") {
+      handleBack();
+    }
+  });
+
   return (
     <div className="flex flex-col h-full justify-center items-center py-6">
       <div

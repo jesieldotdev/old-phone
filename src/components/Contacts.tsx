@@ -31,7 +31,7 @@ export default function Contacts({
         {contactsList.map((contact, idx) => (
           <div
             key={contact.name}
-            ref={el => contactRefs.current[idx] = el}
+            ref={el => { contactRefs.current[idx] = el; }}
             className={`text-lg font-normal px-2 py-1 rounded cursor-pointer transition flex items-center justify-between
               ${contactSelected === idx ? "bg-blue-200 text-blue-900" : "text-blue-900 opacity-70"}
             `}

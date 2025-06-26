@@ -68,8 +68,8 @@ export default function App() {
   const [screen, setScreen] = useState("home"); // "home", "menu", "contacts", "contact-detail"
   const [selected, setSelected] = useState(0);
   const [contactSelected, setContactSelected] = useState(0);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [active, setActive] = useState(null);
+  const [selectedContact, setSelectedContact] = useState<{ name: string; number: string; favorite: boolean } | null>(null);
+  const [active, setActive] = useState<number | null>(null);
   const [time, setTime] = useState(() => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -84,8 +84,8 @@ export default function App() {
   });
   const [dialNumber, setDialNumber] = useState("");
   const [calling, setCalling] = useState(false);
-  const itemRefs = useRef([]);
-  const contactRefs = useRef([]);
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const contactRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   // Atualiza o relógio e data a cada segundo
   useEffect(() => {
@@ -231,6 +231,9 @@ export default function App() {
         <Calling
           contact={null}
           dialNumber={dialNumber}
+          setDialNumber={setDialNumber}
+          screen={screen}
+          setScreen={setScreen}
           onEnd={() => {
             setCalling(false);
             setDialNumber("");
@@ -280,8 +283,10 @@ export default function App() {
         <Dialer
           dialNumber={dialNumber}
           setDialNumber={setDialNumber}
-          handleCall={handleDialCall}
-          handleBack={() => { beep(); setDialNumber(""); setScreen("home"); }}
+          handleBack={() => {
+            setDialNumber("");
+            setScreen("home");
+          }}
         />
       );
     }
@@ -326,23 +331,28 @@ export default function App() {
           {/* Botões de menu com Lucide Icons */}
           <div className="flex w-full justify-between items-center px-8">
             <button
-              className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
+              className={`w-16 h-10 flex items-center justify-center  rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Menu"
-              onClick={() => { 
-                beep(); 
-       
-                  setScreen("menu"); 
-              }}
+              onClick={() => { beep(); setScreen("menu"); }}
             >
-                <Phone size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
+                <Phone size={18} className={"text-green-400 " } />
             </button>
             <button
               className={`w-16 h-10 flex items-center justify-center rounded-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} ${THEMES[tema].button.shadow} active:shadow-inner transition`}
               aria-label="Voltar"
-              onClick={handleBack}
+              onClick={() => {
+                beep();
+                if (calling) {
+                  setCalling(false);
+                  setDialNumber("");
+                  setScreen("home");
+                } else {
+                  handleBack();
+                }
+              }}
             >
          
-                <Delete size={18} className={tema === "classico" ? "text-blue-900" : "text-gray-700"} />
+             <Phone size={18} className="text-red-400 rotate-180" />
             </button>
           </div>
           {/* Direcional em cruz, espaçado */}

@@ -12,7 +12,7 @@ export default function Home({ time, date }) {
         <div className="text-sm text-green-700"><BatteryFull className="h-6"/></div>
       </div>
       {/* Hora principal */}
-      <div className="text-6xl font-bold text-green-800 mb-2">
+      <div className="text-6xl font-bold text-green-800">
         {time}
       </div>
       {/* Data */}
@@ -25,7 +25,7 @@ export default function Home({ time, date }) {
         <div className="flex items-center justify-center gap-1"><Phone className="h-3"/> 1 chamada perdida</div>
       </div>
       {/* Instrução */}
-      <div className="absolute bottom-2 text-lg text-green-600">
+      <div className="absolute bottom-2 text-lg text-green-800">
         Pressione OK para Menu
       </div>
     </div>
