@@ -8,6 +8,7 @@ import Dialer from "./components/Dialer";
 import Calling from "./components/Calling";
 import GamesMenu from "./components/GamesMenu";
 import SnakeGame from "./components/SnakeGame";
+import SpaceImpact from "./components/SpaceImpact";
 import { useMenuNavigation } from "./hooks/useMenuNavigation";
 import {useKeypad} from './contexts/KeypadContext'
 
@@ -196,6 +197,9 @@ export default function App() {
       if (games[selectedGame].name === 'Snake') {
         setScreen('snake')
       }
+      else if (games[selectedGame].name === 'Space Impact') {
+        setScreen('space-impact')
+      }
     }
 
 
@@ -217,6 +221,8 @@ export default function App() {
     } else if (screen === "games-menu") {
       setScreen("menu");
     } else if (screen === 'snake') {
+      setScreen('games-menu')
+    } else if (screen === 'space-impact') {
       setScreen('games-menu')
     }
   };
@@ -281,13 +287,17 @@ export default function App() {
           setSelectedGame={setSelectedGame}
           onSelect={(game) => {
             if (game === "Snake") setScreen("snake");
+            if (game === "Space Impact") setScreen("space-impact");
           }}
           onExit={() => setScreen(null)}
         />
       );
     }
     if (screen === "snake") {
-      return <SnakeGame  onExit={() => setGameScreen("menu")} />;
+      return <SnakeGame onExit={() => setScreen("games-menu")} />;
+    }
+    if (screen === "space-impact") {
+      return <SpaceImpact onExit={() => setScreen("games-menu")} />;
     }
     if (screen === "home") {
       return <Home time={time} date={date} />;
