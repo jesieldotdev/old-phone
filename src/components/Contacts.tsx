@@ -45,8 +45,8 @@ export default function Contacts({
           </div>
         ))}
       </div>
-      <div className=" text-lg font-bold text-green-600 text-center mt-1">
-        OK: Ver • ↑↓: Navegar
+      <div className=" text-lg font-bold text-green-800 text-center mt-1">
+        ↑↓
       </div>
     </div>
   );
