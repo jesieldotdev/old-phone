@@ -8,10 +8,21 @@ import Dialer from "./components/Dialer";
 import Calling from "./components/Calling";
 import GamesMenu from "./components/GamesMenu";
 import SnakeGame from "./components/SnakeGame";
+import { useMenuNavigation } from "./hooks/useMenuNavigation";
+
+type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
 const menuItems = [
   "Contatos", "Mensagens", "Jogos", "Configurações", "Rádio", "Alarme", "Calculadora", "Cronômetro", "Agenda", "Galeria", "Notas", "Relógio Mundial", "Despertador", "Bluetooth", "Sobre o Telefone"
 ];
+
+const games = [
+  { name: "Snake", description: "O clássico jogo da cobrinha" },
+  { name: "Space Impact", description: "Atire nos inimigos espaciais" },
+  { name: "Memory", description: "Jogo da memória retrô" },
+  { name: "Bounce", description: "Desvie dos obstáculos" },
+];
+
 
 const contactsList = [
   { name: "Ana Silva", number: "(11) 99999-1234", favorite: true },
@@ -69,6 +80,8 @@ export default function App() {
   });
   const [screen, setScreen] = useState("home"); // "home", "menu", "contacts", "contact-detail"
   const [selected, setSelected] = useState(0);
+  const [direction, setDirection] = useState<Direction>('UP')
+  const [selectedGame, setSelectedGame] = useState(0);
   const [contactSelected, setContactSelected] = useState(0);
   const [selectedContact, setSelectedContact] = useState<{ name: string; number: string; favorite: boolean } | null>(null);
   const [active, setActive] = useState<number | null>(null);
@@ -145,6 +158,16 @@ export default function App() {
         setContactSelected((prev) => (prev === 0 ? contactsList.length - 1 : prev - 1));
       if (dir === "down")
         setContactSelected((prev) => (prev === contactsList.length - 1 ? 0 : prev + 1));
+    } else if (screen === "games-menu") {
+      if (dir === "up")
+        setSelectedGame((prev) => (prev === 0 ? games.length - 1 : prev - 1))
+
+      if (dir === 'down')
+        setSelectedGame((prev => (prev === games.length - 1 ? 0 : prev + 1)))
+    }
+    else if (screen === "snake") {
+        setDirection(dir.toUpperCase())
+
     }
   };
 
@@ -160,15 +183,22 @@ export default function App() {
         setContactSelected(0);
       }
       else if (menuItems[selected] === "Jogos") {
-      setGameScreen("menu");
-    }
+        setScreen("games-menu");
+        setSelectedGame(0);
+      }
     } else if (screen === "contacts") {
       setSelectedContact(contactsList[contactSelected]);
       setScreen("contact-detail");
     } else if (screen === "dialer") {
       handleDialCall();
     }
-    
+    else if (screen === "games-menu") {
+      if (games[selectedGame].name === 'Snake') {
+        setScreen('snake')
+      }
+    }
+
+
   };
 
   // Voltar para tela anterior
@@ -184,6 +214,10 @@ export default function App() {
     } else if (screen === "dialer") {
       setDialNumber("");
       setScreen("home");
+    } else if (screen === "games-menu") {
+      setScreen("menu");
+    } else if (screen === 'snake') {
+      setScreen('games-menu')
     }
   };
 
@@ -211,25 +245,17 @@ export default function App() {
     }
   };
 
-  // Atalhos de teclado físico
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (screen === "dialer" && /^[0-9*#]$/.test(e.key)) {
-        setDialNumber((prev) => prev + e.key);
-        beep();
-      }
-      if (e.key === "ArrowUp") handleKey("up");
-      if (e.key === "ArrowDown") handleKey("down");
-      if (e.key === "Enter") handleSelect();
-      if (e.key === "Escape") handleBack();
-      if (screen === "dialer" && (e.key === "Backspace" || e.key === "Delete")) {
-        setDialNumber((prev) => prev.slice(0, -1));
-        beep();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [screen, selected, contactSelected, dialNumber]);
+  useMenuNavigation(
+    screen,
+    handleKey,
+    handleSelect,
+    handleBack,
+    dialNumber,
+    setDialNumber,
+    beep
+  );
+
+
 
   // Renderiza o conteúdo da tela
   const renderScreen = () => {
@@ -247,18 +273,21 @@ export default function App() {
       );
     }
 
-    if (gameScreen === "menu") {
+    if (screen === "games-menu") {
       return (
         <GamesMenu
+          games={games}
+          selectedGame={selectedGame}
+          setSelectedGame={setSelectedGame}
           onSelect={(game) => {
-            if (game === "Snake") setGameScreen("snake");
+            if (game === "Snake") setScreen("snake");
           }}
-          onExit={() => setGameScreen(null)}
+          onExit={() => setScreen(null)}
         />
       );
     }
-    if (gameScreen === "snake") {
-      return <SnakeGame onExit={() => setGameScreen("menu")} />;
+    if (screen === "snake") {
+      return <SnakeGame direction={direction} setDirection={setDirection} onExit={() => setGameScreen("menu")} />;
     }
     if (screen === "home") {
       return <Home time={time} date={date} />;
@@ -393,7 +422,10 @@ export default function App() {
               {/* Esquerda */}
               <button
                 className={`w-12 h-12 mr-1 rounded-l-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
-                onClick={beep}
+                onClick={() => {
+                  beep()
+                  handleKey("left")
+                }}
               >
                 ◀
               </button>
@@ -407,7 +439,10 @@ export default function App() {
               {/* Direita */}
               <button
                 className={`w-12 h-12 ml-1 rounded-r-lg ${THEMES[tema].button.bg} border ${THEMES[tema].border} font-bold ${THEMES[tema].button.shadow} active:shadow-inner transition`}
-                onClick={beep}
+                onClick={() => {
+                  beep()
+                  handleKey("right")
+                }}
               >
                 ▶
               </button>
@@ -436,9 +471,11 @@ export default function App() {
                     } else if (n === "*") {
                       setScreen("dialer");
                       setDialNumber("");
-                    } else if (n === "0") {
-                      setScreen("home");
-                    } else {
+                    } 
+                    // else if (n === "0") {
+                    //   setScreen("home");
+                    // } 
+                    else if(screen === 'home') {
                       setScreen("dialer");
                       setDialNumber(n);
                     }

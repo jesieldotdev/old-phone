@@ -3,30 +3,31 @@ import React, { useState, useRef, useEffect } from "react";
 interface GamesMenuProps {
   onSelect: (game: string) => void;
   onExit: () => void;
+  games: {
+    name: string;
+    description: string;
+}[]
+  selectedGame: number
+  setSelectedGame: React.Dispatch<React.SetStateAction<number>>
 }
 
-const games = [
-  { name: "Snake", description: "O clássico jogo da cobrinha" },
-  { name: "Space Impact", description: "Atire nos inimigos espaciais" },
-  { name: "Memory", description: "Jogo da memória retrô" },
-  { name: "Bounce", description: "Desvie dos obstáculos" },
-];
 
-export default function GamesMenu({ onSelect, onExit }: GamesMenuProps) {
-  const [selected, setSelected] = useState(0);
+export default function GamesMenu({ onSelect, onExit,
+  selectedGame, setSelectedGame, games
+ }: GamesMenuProps) {
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   // Navegação por teclado
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowUp") {
-        setSelected((prev) => (prev === 0 ? games.length - 1 : prev - 1));
+        setSelectedGame((prev) => (prev === 0 ? games.length - 1 : prev - 1));
       }
       if (e.key === "ArrowDown") {
-        setSelected((prev) => (prev === games.length - 1 ? 0 : prev + 1));
+        setSelectedGame((prev) => (prev === games.length - 1 ? 0 : prev + 1));
       }
       if (e.key === "Enter") {
-        onSelect(games[selected].name);
+        onSelect(games[selectedGame].name);
       }
       if (e.key === "Escape") {
         onExit();
@@ -34,17 +35,17 @@ export default function GamesMenu({ onSelect, onExit }: GamesMenuProps) {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [selected, onSelect, onExit]);
+  }, [selectedGame, onSelect, onExit]);
 
   // Centraliza o item selecionado
   useEffect(() => {
-    if (itemRefs.current[selected]) {
-      itemRefs.current[selected]?.scrollIntoView({
+    if (itemRefs.current[selectedGame]) {
+      itemRefs.current[selectedGame]?.scrollIntoView({
         block: "center",
         behavior: "smooth",
       });
     }
-  }, [selected]);
+  }, [selectedGame]);
 
   return (
     <div className="flex flex-col h-full font-mono select-none">
@@ -58,7 +59,7 @@ export default function GamesMenu({ onSelect, onExit }: GamesMenuProps) {
             key={game.name}
             ref={el => itemRefs.current[idx] = el}
             className={`text-lg px-2 py-1 rounded cursor-pointer transition
-              ${selected === idx ? "bg-green-200 text-green-900 font-bold" : "text-green-900 opacity-70"}
+              ${selectedGame === idx ? "bg-green-200 text-green-900 font-bold" : "text-green-900 opacity-70"}
             `}
             onClick={() => onSelect(game.name)}
             tabIndex={0}

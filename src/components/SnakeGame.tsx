@@ -12,7 +12,7 @@ const INITIAL_SNAKE: Cell[] = [
   [8, 9],
   [8, 10],
 ];
-const INITIAL_DIRECTION: Direction = "UP";
+// const INITIAL_DIRECTION: Direction = "UP";
 
 function getRandomCell(snake: Cell[]): Cell {
   let cell: Cell;
@@ -27,11 +27,15 @@ function getRandomCell(snake: Cell[]): Cell {
 
 export default function SnakeGame({
   onExit,
+  setDirection,
+  direction
 }: {
   onExit?: () => void;
+  setDirection: React.Dispatch<React.SetStateAction<Direction>>
+  direction: Direction
 }) {
   const [snake, setSnake] = useState<Cell[]>(INITIAL_SNAKE);
-  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION);
+  // const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION);
   const [food, setFood] = useState<Cell>(getRandomCell(INITIAL_SNAKE));
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -47,7 +51,7 @@ export default function SnakeGame({
   const beep = () => {
     const audio = new window.Audio("/eat.mp3");
     audio.currentTime = 0;
-    audio.volume = 0.2; 
+    audio.volume = 0.2;
     audio.play().catch(() => { }); // Ignora erro se não houver áudio
   };
   // Loop do jogo
@@ -127,7 +131,7 @@ export default function SnakeGame({
 
   function restart() {
     setSnake(INITIAL_SNAKE);
-    setDirection(INITIAL_DIRECTION);
+    setDirection("UP");
     setFood(getRandomCell(INITIAL_SNAKE));
     setScore(0);
     setGameOver(false);
