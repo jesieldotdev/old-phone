@@ -313,7 +313,7 @@ export default function App() {
 
         {/* Screen */}
 <div className="relative w-[280px] h-[260px] rounded-lg overflow-hidden crt mb-4 border-4 border-gray-900">
-  {/* Tela original */}
+  {/* Conteúdo da tela */}
   <div
     className="w-full h-full flex flex-col justify-start"
     style={{
@@ -324,10 +324,10 @@ export default function App() {
   >
     {renderScreen()}
   </div>
-  {/* Overlays CRT */}
+  {/* Overlay scanline - sempre por cima */}
   <div className="pointer-events-none absolute inset-0 z-10 crt-scanline" />
-  <div className="pointer-events-none absolute inset-0 z-20 crt-vignette" />
-  <div className="pointer-events-none absolute inset-0 z-30 crt-glass" />
+  {/* (opcional) Overlay glass, vignette, etc */}
+  <div className="pointer-events-none absolute inset-0 z-20 crt-glass" />
 </div>
 
         {/* Keypad */}
